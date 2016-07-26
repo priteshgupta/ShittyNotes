@@ -1,35 +1,18 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title></title>
-  <style type="text/css">
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    textarea {
-      font: 100 16px/22px sans-serif;
-      width: 90%;
-      height: 90vh;
-      resize: none;
-      outline: none;
-      border: none;
-    }
-  </style>
+  <title>ShittyNotes</title>
+  <link rel="icon" href="data:;base64,iVBORw0KGgo=">
+  <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
   <textarea id='notes' spellcheck='false'></textarea>
-  <script type="text/javascript">
-    window.notes.value = localStorage.getItem('shittyNotes');
-    window.notes.addEventListener('keydown', (e) => {
-      localStorage.setItem('shittyNotes', e.target.value);
-    });
-  </script>
+  <footer>
+    <nav id="tabs">
+      <a href="">&nbsp;</a>
+    </nav>
+    <input type="text" id="addTab" placeholder="New tab">
+  </footer>
+  <script src="main.js" charset="utf-8"></script>
 </body>
 </html>
