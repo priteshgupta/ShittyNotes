@@ -5,6 +5,10 @@
   --nav-input-border: #1565C0;
 }
 
+* {
+  font: 100 16px/22px sans-serif;
+}
+
 html, body {
   height: 100%;
   margin: 0;
@@ -18,8 +22,14 @@ body {
   flex-direction: column;
 }
 
-* {
-  font: 100 16px/22px sans-serif;
+body:not(.overlay) h1,
+body.overlay *:not(h1) {
+  display: none;
+}
+
+body.overlay * {
+  -webkit-user-select: none;
+  cursor: default;
 }
 
 input, textarea {
@@ -29,6 +39,11 @@ input, textarea {
 
 a {
   text-decoration: none;
+}
+
+h1 {
+  font-size: 200%;
+  color: var(--nav-a-hover-bg);
 }
 
 textarea {

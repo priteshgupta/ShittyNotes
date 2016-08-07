@@ -1,16 +1,21 @@
-(({notes, addTab, tabs, location, document}) => {
-  let shittyNotesContent = localStorage.getItem('shittyNotesContent');
+(() => {
+  'use strict';
+
+  const {notes, addTab, tabs, location} = window;
+  const contentFromStorage = localStorage.getItem('shittyNotesContent');
+  const shittyNotesContent = contentFromStorage ? JSON.parse(contentFromStorage) : {default: ''};
   let shittyNotesTab = localStorage.getItem('shittyNotesTab');
-  let activeTab;
-
-  if (shittyNotesContent) {
-    shittyNotesContent = JSON.parse(shittyNotesContent);
-  } else {
-    shittyNotesContent = {default: ''};
-  }
-
   let shittyNotesTabs = Object.keys(shittyNotesContent);
-  let currentTabFromHash = location.hash.slice(1);
+  let defaultHash = location.hash.slice(1);
+  let currentTabFromHash = shittyNotesTabs.includes(defaultHash) ? defaultHash : null;
+  let activeTab = currentTabFromHash || shittyNotesTab || shittyNotesTabs[0];
+  let changed;
+
+  const setActiveTab = tab => {
+    activeTab = tab;
+    location.hash = tab;
+    window.document.title = `ShittyNotes - ${tab}`;
+  };
 
   const renderApp = () => {
     tabs.innerHTML = shittyNotesTabs.reduce((result, tab) => (
@@ -19,25 +24,21 @@
                   <strong>✕</strong>
                 </a>`
     ), '');
-
     notes.value = shittyNotesContent[activeTab];
-    notes.focus();
+    setTimeout(() => notes.focus(), 0);
   };
 
-  const setActiveTab = tab => {
-    activeTab = tab;
-    location.hash = tab;
-    document.title = `ShittyNotes - ${tab}`;
-    localStorage.setItem('shittyNotesTab', tab);
-  };
+  const saveChanges = e => {
+    if (e) {
+      localStorage.setItem('shittyNotesActive', 'false');
+    }
 
-  if (shittyNotesTabs.includes(currentTabFromHash)) {
-    setActiveTab(currentTabFromHash);
-  } else if (shittyNotesTab) {
-    setActiveTab(shittyNotesTab);
-  } else {
-    setActiveTab(shittyNotesTabs[0]);
-  }
+    if (e || changed) {
+      localStorage.setItem('shittyNotesTab', activeTab);
+      localStorage.setItem('shittyNotesContent', JSON.stringify(shittyNotesContent));
+      changed = false;
+    }
+  };
 
   tabs.onclick = e => {
     e.preventDefault();
@@ -54,6 +55,8 @@
           break;
         }
 
+        return;
+
         const tab = e.target.parentNode.innerText.slice(0, -2);
         delete shittyNotesContent[tab];
         shittyNotesTabs = shittyNotesTabs.filter(t => t !== tab);
@@ -61,7 +64,6 @@
         if (activeTab === tab) {
           setActiveTab(shittyNotesTabs[0]);
         }
-        localStorage.setItem('shittyNotesContent', JSON.stringify(shittyNotesContent));
         break;
     }
 
@@ -73,18 +75,22 @@
 
     if (e.keyCode === 13 && value && !(value in shittyNotesContent)) {
       shittyNotesContent[value] = '';
-      localStorage.setItem('shittyNotesContent', JSON.stringify(shittyNotesContent));
       shittyNotesTabs.push(value);
       setActiveTab(value);
-      renderApp();
       e.target.value = '';
+      renderApp();
+      changed = true;
     }
   };
 
-  notes.onkeydown = notes.onchange = e => {
+  notes.onkeydown = e => {
     shittyNotesContent[activeTab] = e.target.value;
-    localStorage.setItem('shittyNotesContent', JSON.stringify(shittyNotesContent));
-  };
+    changed = true;
+  }
 
   renderApp();
-})(window);
+  setActiveTab(activeTab);
+  setInterval(saveChanges, 5000);
+  window.onbeforeunload = saveChanges;
+  localStorage.setItem('shittyNotesActive', 'true');
+})();

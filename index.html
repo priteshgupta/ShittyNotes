@@ -1,11 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <script>
+    if (localStorage.getItem('shittyNotesActive') === 'true') {
+      setTimeout(() => document.body.classList.add('overlay'), 0);
+    } else {
+      document.head.appendChild(
+        Object.assign(document.createElement('script'), {src: 'main.js', charset: 'utf-8'})
+      );
+    }
+  </script>
   <title>ShittyNotes</title>
   <link rel="icon" href="data:;base64,iVBORw0KGgo=">
   <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
+  <h1>ShittyNotes is already open</h1>
   <textarea id="notes" spellcheck="false"></textarea>
   <footer>
     <nav id="tabs">
@@ -13,6 +23,5 @@
     </nav>
     <input type="text" id="addTab" placeholder="New tab">
   </footer>
-  <script src="main.js" charset="utf-8"></script>
 </body>
 </html>
